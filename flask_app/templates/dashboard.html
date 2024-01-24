@@ -1,0 +1,47 @@
+{%extends "side.html" %}
+{%block content%}
+
+<div class="container">
+    <div class="header">
+        <h1 class="title">Dự đoán giá nhà đất</h1>
+    </div>
+    <div class="describe">
+        <h1>Phân tích sơ bộ</h1>
+        <div class="row">
+            <div class="col">
+                <p>Số lượng mẫu</p>
+                <p class="number">{{data.numOfProject}}</p>
+            </div>
+            <div class="col">
+                <p>Giá tiền trung bình</p>
+                <p class="number">{{data.meanPrice}} VND</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="grid">
+    <div class="item item-big">
+        <h1>Biểu đồ thể hiện loại nhà đất theo tỉnh thành</h1>
+        <div id="chart1"></div>
+    </div>
+    <div class="item">
+        <h1>Phân bố ngày đăng bán</h1>
+        <div id="chart_date"></div>
+    </div>
+    <div class="item">
+        <h1>Số lượng loại nhà đất</h1>
+        <div id="chart2"></div>
+    </div>
+</div>
+
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+    let fig1 = {{ data.fig1JSON | safe}};
+    let fig_date = {{ data.fig_dateJSON | safe}};
+    let fig2 = {{ data.fig2JSON | safe}};
+
+    Plotly.newPlot("chart1", fig1,{});
+    Plotly.newPlot("chart_date", fig_date,{});
+    Plotly.newPlot("chart2", fig2,{});
+</script>
+{% endblock %}

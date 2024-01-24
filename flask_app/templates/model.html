@@ -1,0 +1,173 @@
+{%extends "side.html" %}
+{%block content%}
+<div>
+    <h3>Bảng dữ liệu mẫu</h3>
+    <div id="table-container">
+        {{data.df | safe}}
+    </div>
+</div>
+
+<h3>Nhập liệu</h3>
+<div class="form-row">
+    <label>Chọn model:</label>
+    <select id="model-select">
+        <option value="0">Mô hình Linear Regression</option>
+        <option value="1">Mô hình Random Forest</option>
+        <option value="2">Mô hình Gradient Boosting</option>
+        <option value="3">Mô hình Decision Tree</option>
+        <!-- Add more options as needed -->
+    </select>
+</div>
+
+<div class="form-row">
+    <label>Chọn phương thức nhập:</label>
+    <select id="method-select" onchange="change_select_insert()">
+        <option value="number-input">Dữ liệu mẫu</option>
+        <option value="insert_form">Nhập dữ liệu</option>
+        <option value="url-input">Crawl dữ liệu từ URL</option>
+        <!-- Add more options as needed -->
+    </select>
+</div>
+
+<div class="form-row insert" id="number-input">
+    <label>Nhập số:</label>
+    <input type="number" placeholder="Line number">
+</div>
+
+<div class="form-row insert" id="url-input" disabled="true">
+    <label>Nhập URL:</label>
+    <label style="font-size: 12px;">Ex: https://nhadatvui.vn/cho-thue-biet-thu-phuong-thoi-hoa-thi-xa-ben-cat/chinh-chu-can-ban-gap-can-nha-2-tang-mat-tien-kinh-doanh-vd4-quoc-lo-13-binh-duong1689585726</label>
+    <input type="text" placeholder="URL" size="80">
+</div>
+
+<div class="form-row insert" id="insert_form"  disabled="true">
+    <form>
+        <label for="loaiBDS">Loại BDS:</label>
+        <input type="text" id="LoaiBDS" placeholder="Đất bán">
+
+        <label for="dienTich">Diện Tích:</label>
+        <input type="text" id="DienTich" placeholder="200">
+
+        <label for="tinh">Tỉnh\Thành phố:</label>
+        <input type="text" id="Tinh" placeholder="Bình Thuận">
+
+        <label for="hienTrangNha">Hiện Trạng Nhà:</label>
+        <input type="text" id="HienTrangNha" placeholder="Nhà trống">
+
+        <label for="viTri">Vị trí:</label>
+        <input type="text" id="ViTri" placeholder="Mặt tiền">
+
+        <label for="phongNgu">Số phòng ngủ:</label>
+        <input type="text" id="PhongNgu" placeholder="2">
+
+        <label for="phongTam">Số phòng tắm:</label>
+        <input type="text" id="PhongTam" placeholder="2">
+
+        <label for="tang">Số tầng:</label>
+        <input type="text" id="Tang" placeholder="2">
+    </form>
+</div>
+
+<button onclick="predict()">Dự đoán</button>
+
+<div class="loader-container" disabled="true">
+    <div class="loader"></div>
+    <p>Predicting...</p>
+  </div>
+
+<div id="table-prediction"></div>
+
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+<script>
+    let get_form_value = () => {
+        
+        form_data = {}
+        let formEles = document.querySelector('div#insert_form > form').elements
+
+        for(let i = 0; i < formEles.length; i++){
+            if (formEles[i].type == "text"){
+                form_data[formEles[i].id] = formEles[i].value
+            }
+        }
+
+        return form_data
+    }
+
+    let get_number_input = () => {
+        data = document.querySelector('#number-input > input[type=number]').value
+
+        return data
+    }
+
+    let get_url_input = () => {
+        data = document.querySelector('#url-input > input[type=text]').value
+
+        return data
+    }
+
+    let change_select_insert = () => {
+        let inserts = document.querySelectorAll('div.insert')
+        let selection = document.querySelector('#method-select').value
+        
+        for (let i = 0; i < inserts.length; i++){
+            if(inserts[i].id != selection) inserts[i].setAttribute("disabled", "true")
+            else inserts[i].setAttribute("disabled", "false")
+        }
+    }
+
+    let set_loader_disabled = (disabled) => {
+        el = document.querySelector('div.loader-container')
+        el.setAttribute('disabled', disabled)
+    }
+
+    let render_prediction = (data) => {
+        el = document.querySelector('div#table-prediction')
+
+        if (data) {
+            el.setAttribute('disabled', "false")
+            el.innerHTML = data
+        } 
+
+        else el.setAttribute('disabled', "true")
+    }
+
+    let predict = async () => {
+        console.log('start', Date.now().toLocaleString())
+
+        set_loader_disabled("false")
+        render_prediction(null)
+
+        let map_selection = {
+            'number-input' : get_number_input,
+            'insert_form' : get_form_value,
+            'url-input' : get_url_input
+        }
+
+        let selection = document.querySelector('#method-select').value
+        let model = document.querySelector("#model-select").value
+        let inserted_data = map_selection[selection]()
+        
+        let data = {
+            'insert_type' : selection,
+            'model' : model,
+            inserted_data
+        }
+
+        try {
+            const response = await fetch('/get_prediction', {
+                method : 'POST',
+                headers : {
+                    "Content-Type" : "application/json",
+                },
+                body : JSON.stringify(data)
+            })
+            const result = await response.json();
+            console.log('end', Date.now().toLocaleString())
+            set_loader_disabled("true")
+            render_prediction(result.df_html)
+        } catch (err) {
+            console.log(err)
+        }
+    }
+</script>
+{% endblock %}

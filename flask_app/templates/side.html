@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dự đoán giá trị nhà đất</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+      }
+
+      #sidebar {
+        position: fixed;
+        height: 100vh;
+        width: 15%;
+        background-color: #333;
+        padding: 10px;
+        color: white;
+        box-sizing: border-box;
+        float: left;
+      }
+
+      #content {
+        margin-left: 15%;
+        padding: 20px;
+        box-sizing: border-box;
+        flex: auto;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        height: 100px;
+        background-color: #000000;
+        color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .title {
+        font-size: 30px;
+        margin: 0;
+        font-weight: bold;
+      }
+
+      .describe {
+        padding: 20px;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .col {
+        width: 50%;
+      }
+
+      .number {
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-rows: auto auto;
+        /* Hai hàng, hàng đầu và hàng hai */
+        grid-template-columns: 1fr 1fr;
+        /* Hai cột, mỗi cột chiếm 1 phần bằng nhau */
+        gap: 10px;
+        /* Khoảng cách giữa các ô */
+      }
+
+      .item {
+        background-color: #ddd;
+        padding: 20px;
+        text-align: center;
+      }
+
+      .item-big {
+        grid-row: 1;
+        grid-column: span 2;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      .form-row {
+        margin: 10px 0 10px 0;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      #content > h3 {
+        margin: 5vh 0 10px 0;
+      }
+
+      select, input, button {
+        padding: 8px;
+        font-size: 16px;
+      }
+
+      button {
+        margin: 10px 0 10px 0;
+        background-color: #449348;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      button:hover {
+        background-color: #2f6932;
+      }
+
+      div[disabled="true"] {
+        display: none;
+      }
+
+      #table-container {
+        overflow: scroll;
+        width: 80vw;
+        height: 30vh;
+      }
+
+      #table-container td {
+        max-width: 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 12.5px;
+      }
+
+      .loader {
+        margin-top: 10px;
+        border: 6px solid #f3f3f3; /* Light grey */
+        border-top: 6px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="sidebar">
+      <h2>Selection</h2>
+      <select id="selectionBox">
+        <option value="0">Dashboard</option>
+        <option value="1">Dự đoán</option>
+      </select>
+      <button onclick="go_to_url()">Go to</button>
+    </div>
+
+    <div id="content">
+      {% block content %}{% endblock %}
+    </div>
+
+    <script>
+      function go_to_url() {
+        let selectedOption = document.getElementById("selectionBox").value;
+        let list_url = ["/", "/predict"];
+
+        window.location.assign(list_url[Number(selectedOption)]);
+      }
+    </script>
+  </body>
+</html>
