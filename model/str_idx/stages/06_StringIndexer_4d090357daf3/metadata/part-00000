@@ -1,0 +1,1 @@
+{"class":"org.apache.spark.ml.feature.StringIndexerModel","timestamp":1658060826203,"sparkVersion":"3.3.0","uid":"StringIndexer_4d090357daf3","paramMap":{"handleInvalid":"skip","outputCol":"PhongNgu_idx","inputCol":"PhongNgu"},"defaultParamMap":{"handleInvalid":"error","stringOrderType":"frequencyDesc","outputCol":"StringIndexer_4d090357daf3__output"}}
